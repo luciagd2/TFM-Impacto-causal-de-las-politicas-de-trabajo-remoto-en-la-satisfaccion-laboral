@@ -25,8 +25,8 @@ df_model = df[[
 ###    "n_qfhigh",    # nivel de educacion mas alto completado
     
     # Estructura laboral
-    "n_jbhrs",      # horas trabajadas a la semana
-###    "n_jbsectpub",
+    "n_jbhrs",     # horas trabajadas a la semana
+    "n_jbsect",    # sector público o privado
     "n_jbsize",    # tamaño de la empresa
     "n_jbmngr",    # puesto de trabajo
     "n_jbseg_dv",  # grupo socioeconomico al que pertenece (ocupacion)
@@ -168,7 +168,9 @@ aut_cols = [
     "aut_orden",
     "aut_horas"
 ]
-df_model["autonomia"] = df_model[aut_cols].mean(axis=1, skipna=True)
+# skipna=True permite calcular la media ignorando valores nulos parciales, evitando la perdida de observaciones
+df_model["autonomia"] = df_model[aut_cols].mean(axis=1, skipna=True) 
+
 # Eliminacion de las columnas usadas para crear esta ultima
 df_model = df_model.drop(columns=aut_cols)
 

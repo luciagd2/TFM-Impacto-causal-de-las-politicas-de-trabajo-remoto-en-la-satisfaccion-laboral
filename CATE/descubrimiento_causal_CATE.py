@@ -4,37 +4,19 @@
 # EN NINGUN CASO DE ALPHA
 ###
 
-from CATE.preparacion_datos_CATE import df_model
+from preparacion_datos_CATE import df_model
 
 from causallearn.search.ConstraintBased.PC import pc
 
 from sklearn.preprocessing import StandardScaler
 
 from causallearn.utils.GraphUtils import GraphUtils
-from graphviz import Digraph
+from causallearn.graph.Graph import Graph
+import networkx as nx
+from networkx.drawing.nx_pydot import to_pydot
 
 # Variables para descubrimiento causal
-vars_ant = [
-    "teletrabajo",          # 1
-    "satisfaccion",         # 2
 
-    "edad",                 # 3
-    "sexo",                 # 4
-    "educacion",            # 5
-    "ocupacion",            # 6
-    "tam_empresa",          # 7
-    "antiguedad",           # 8
-    "tiene_hijos",          # 9
-
-    "autonomia",            # 10
-    "digitalizacion",       # 11
-    "horas_trabajadas",     # 12
-    "horas_extra",          # 13
-    "seguridad_laboral",    # 14
-    "motivacion_trabajo",   # 15
-    "satisfaccion_ingresos",# 16
-    "trabajo_fisico"        # 17
-]
 
 vars = [
     "teletrabajo",          # 1
@@ -64,8 +46,30 @@ vars = [
     "horario_fin_semana"    # 23
 ]
 
+vars_2 = [
+    "teletrabajo",          # 1
+    "satisfaccion",         # 2
+
+    "edad",                 # 3
+    "sexo",                 # 4
+    "educacion",            # 5
+    "ocupacion",            # 6
+    "tam_empresa",          # 7
+    "antiguedad",           # 8
+    "tiene_hijos",          # 9
+
+    "autonomia",            # 10
+    "digitalizacion",       # 11
+    "horas_trabajadas",     # 12
+    "horas_extra",          # 13
+    "seguridad_laboral",    # 14
+    "motivacion_trabajo",   # 15
+    "satisfaccion_ingresos",# 16
+    "trabajo_fisico"        # 17
+]
+
 # Nos aseguramos de que no existen nulos
-df_causal = df_model[vars].dropna()
+df_causal = df_model[vars_2].dropna()
 
 # Se reduce la carga computacional
 df_sample = df_causal.sample(
@@ -98,71 +102,35 @@ pyd.write_png("dag_causal_01_2.png")
 
 
 # ----- Imagenes mas visuales del DAG simplificado -----
-# Variables objetivo
-focus_vars = ["teletrabajo", "satisfaccion"]
+filtered_edges001 = nx.DiGraph()
+filtered_edges005 = nx.DiGraph()
+filtered_edges01 = nx.DiGraph()
 
-# Crear grafo
-dot = Digraph()
-# Recorrer aristas
-for edge in cg_01.G.get_graph_edges():
-    node1 = edge.get_node1().get_name()
-    node2 = edge.get_node2().get_name()
-    # Mantener solo conexiones relevantes
-    if node1 in focus_vars or node2 in focus_vars:
-        # Tipo de arista
-        endpoint1 = edge.get_endpoint1()
-        endpoint2 = edge.get_endpoint2()
-        # Direccion simple
-        if str(endpoint1) == "TAIL" and str(endpoint2) == "ARROW":
-            dot.edge(node1, node2)
-        elif str(endpoint1) == "ARROW" and str(endpoint2) == "TAIL":
-            dot.edge(node2, node1)
-        else:
-            # Arista no orientada
-            dot.edge(node1, node2, dir="none")
-# Guardar
-dot.render("dag_parcial_001", format="png", cleanup=True)
+for e in cg_01.G.get_graph_edges():
+    n1 = e.get_node1().get_name()
+    n2 = e.get_node2().get_name()
 
-# Crear grafo
-dot = Digraph()
-# Recorrer aristas
-for edge in cg_05.G.get_graph_edges():
-    node1 = edge.get_node1().get_name()
-    node2 = edge.get_node2().get_name()
-    # Mantener solo conexiones relevantes
-    if node1 in focus_vars or node2 in focus_vars:
-        # Tipo de arista
-        endpoint1 = edge.get_endpoint1()
-        endpoint2 = edge.get_endpoint2()
-        # Direccion simple
-        if str(endpoint1) == "TAIL" and str(endpoint2) == "ARROW":
-            dot.edge(node1, node2)
-        elif str(endpoint1) == "ARROW" and str(endpoint2) == "TAIL":
-            dot.edge(node2, node1)
-        else:
-            # Arista no orientada
-            dot.edge(node1, node2, dir="none")
-# Guardar
-dot.render("dag_parcial_005", format="png", cleanup=True)
+    if "X1" in [n1, n2] or "X2" in [n1, n2]:
+        filtered_edges001.add_edge(n1, n2)
 
-# Crear grafo
-dot = Digraph()
-# Recorrer aristas
-for edge in cg_1.G.get_graph_edges():
-    node1 = edge.get_node1().get_name()
-    node2 = edge.get_node2().get_name()
-    # Mantener solo conexiones relevantes
-    if node1 in focus_vars or node2 in focus_vars:
-        # Tipo de arista
-        endpoint1 = edge.get_endpoint1()
-        endpoint2 = edge.get_endpoint2()
-        # Direccion simple
-        if str(endpoint1) == "TAIL" and str(endpoint2) == "ARROW":
-            dot.edge(node1, node2)
-        elif str(endpoint1) == "ARROW" and str(endpoint2) == "TAIL":
-            dot.edge(node2, node1)
-        else:
-            # Arista no orientada
-            dot.edge(node1, node2, dir="none")
-# Guardar
-dot.render("dag_parcial_01", format="png", cleanup=True)
+for e in cg_05.G.get_graph_edges():
+    n1 = e.get_node1().get_name()
+    n2 = e.get_node2().get_name()
+
+    if "X1" in [n1, n2] or "X2" in [n1, n2]:
+        filtered_edges005.add_edge(n1, n2)
+
+for e in cg_1.G.get_graph_edges():
+    n1 = e.get_node1().get_name()
+    n2 = e.get_node2().get_name()
+
+    if "X1" in [n1, n2] or "X2" in [n1, n2]:
+        filtered_edges01.add_edge(n1, n2)
+
+# Generar grafos y guardar las imagenes
+pyd = to_pydot(filtered_edges001)
+pyd.write_png("dag_causal_simp_001.png")
+pyd = to_pydot(filtered_edges005)
+pyd.write_png("dag_causal_simp_005.png")
+pyd = to_pydot(filtered_edges01)
+pyd.write_png("dag_causal_simp_01.png")

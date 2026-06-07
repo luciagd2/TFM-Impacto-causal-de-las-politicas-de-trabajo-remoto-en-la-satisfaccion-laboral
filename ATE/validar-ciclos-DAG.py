@@ -5,7 +5,7 @@ from ATE.preparacion_datos import df_model
 # Construcción del grafo
 G = nx.DiGraph()
 
-edges = [
+relaciones = [
     ("teletrabajo", "salario"),
     ("teletrabajo", "autonomia"),
     ("edad", "salario"),
@@ -29,11 +29,11 @@ edges = [
     ("sector", "ocupacion"),
 ]
 
-G.add_edges_from(edges)
+G.add_edges_from(relaciones)
 
 # Detectar ciclos
-cycles = list(nx.simple_cycles(G))
+ciclos = list(nx.simple_cycles(G))
 
 print("CICLOS DETECTADOS:")
-for c in cycles:
+for c in ciclos:
     print(c)

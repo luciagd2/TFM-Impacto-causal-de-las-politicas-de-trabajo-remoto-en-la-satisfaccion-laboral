@@ -51,6 +51,7 @@ df_laboral = df_model[vars_laborales].dropna()
 df_ocupacional = df_model[vars_ocupacionales].dropna()
 
 # Escalado
+#r Se aplica una normalizacion para homogeneizar las escalas y evitar que diferencias de magnitud afecten al comportamiento del algoritmo
 scaler = StandardScaler()
 data_scaled_causal = scaler.fit_transform(df_causal)
 data_scaled_demografico = scaler.fit_transform(df_demografico)
