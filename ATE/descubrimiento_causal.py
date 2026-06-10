@@ -1,3 +1,17 @@
+"""
+2. Descubrimiento de la estructura causal.
+
+En este script se aplican técnicas de descubrimiento causal sobre los datos preprocesados con el objetivo de 
+identificar las posibles relaciones de dependencia e independencia entre las variables analizadas.
+
+En particular, se utiliza el algoritmo PC para estimar la estructura del grafo causal a partir de los patrones 
+observados en los datos.
+
+Los grafos obtenidos (guardados en la carpeta 'Imagenes Grafos ATE') sirven como apoyo para la construcción del 
+DAG utilizado en el análisis causal, complementando la evidencia procedente de la literatura especializada y el 
+razonamiento teórico sobre el dominio de estudio. 
+"""
+
 from ATE.preparacion_datos import df_model
 
 from causallearn.search.ConstraintBased.PC import pc
@@ -5,6 +19,11 @@ from causallearn.utils.GraphUtils import GraphUtils
 
 from sklearn.preprocessing import StandardScaler
 
+"""
+Con el objetivo de analizar distintas dimensiones y evitar una dependencia excesiva de una única especificación, 
+el descubrimiento causal se realiza sobre varios subconjuntos de variables agrupados según criterios conceptuales 
+y organizativos.
+"""
 # Variables para descubrimiento causal
 vars_causal = [
     "teletrabajo",
@@ -51,7 +70,7 @@ df_laboral = df_model[vars_laborales].dropna()
 df_ocupacional = df_model[vars_ocupacionales].dropna()
 
 # Escalado
-#r Se aplica una normalizacion para homogeneizar las escalas y evitar que diferencias de magnitud afecten al comportamiento del algoritmo
+# Se aplica una normalizacion para homogeneizar las escalas y evitar que diferencias de magnitud afecten al comportamiento del algoritmo
 scaler = StandardScaler()
 data_scaled_causal = scaler.fit_transform(df_causal)
 data_scaled_demografico = scaler.fit_transform(df_demografico)

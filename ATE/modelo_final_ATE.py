@@ -1,6 +1,12 @@
-### CAMBIOS RESPECTO AL MODELO 3
-# SE FIJA UNA SEMILLA
+"""
+4. ATE
 
+En este script se implementa la estimación del Average Treatment Effect (ATE) del teletrabajo sobre la satisfacción laboral. 
+
+Para ello se construye un modelo causal basado en el DAG definido previamente, se verifica el cumplimiento de los principales 
+supuestos de inferencia causal observacional y se estima el efecto medio mediante técnicas de Double Machine Learning (DML). 
+Finalmente, se realizan validaciones y pruebas de robustez para evaluar la estabilidad y consistencia de los resultados obtenidos.
+"""
 from ATE.preparacion_datos import df_model
 
 from dowhy import CausalModel
@@ -23,7 +29,6 @@ from sklearn.exceptions import DataConversionWarning
 warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
 # Definicion del DAG
-
 grafo_causal = """
 digraph {
     teletrabajo -> salario
@@ -64,13 +69,12 @@ resultado = "satisfaccion"
 variables_ajuste = [
     "edad",
     "sexo",
-###    "horas_trabajadas",
     "sector",
     "tam_empresa",
     "puesto"
 ]
 
-# SEMILLA
+# Semilla aleatorio
 np.random.seed(42)
 random.seed(42)
 
@@ -96,8 +100,6 @@ plt.title("Overlap del propensity score")
 plt.show()
 
 # Trimming - Eliminacion de regiones sin soporte comun
-###lower = df_model[df_model["teletrabajo"]==1]["propensity"].quantile(0.05)
-###upper = df_model[df_model["teletrabajo"]==0]["propensity"].quantile(0.95)
 lower = max(
     df_model[df_model["teletrabajo"]==1]["propensity"].quantile(0.05),
     df_model[df_model["teletrabajo"]==0]["propensity"].quantile(0.05)
@@ -114,9 +116,7 @@ df_trim = df_model[
 ]
 
 
-
 # MODELO DOWHY
-
 # Creacion del objeto casual
 model = CausalModel(
     data=df_trim,
@@ -175,16 +175,7 @@ print("Propensity score max control:", ps[T==0].max())
 
 # TEST DE BALANCE
 print("---------- TEST BALANCE ----------")
-###df_balance = df_model.copy()
-###df_balance["T"] = df_balance["teletrabajo"]
-
-###balance = df_balance.groupby("T")[variables_ajuste].median()
-
-###print(balance)
-###print(balance.loc[1] - balance.loc[0])
-
 def smd(x_treated, x_control):
-
     mean_t = np.mean(x_treated)
     mean_c = np.mean(x_control)
 
@@ -195,27 +186,23 @@ def smd(x_treated, x_control):
 
     return abs(mean_t - mean_c) / pooled_std
 
-
 print("--- SMD ANTES DE TRIMMING ---")
 
 for col in variables_ajuste:
-
     treated = df_model[df_model["teletrabajo"] == 1][col]
     control = df_model[df_model["teletrabajo"] == 0][col]
 
     print(col, round(smd(treated, control), 3))
 
-
 print("--- SMD DESPUÉS DE TRIMMING ---")
 
 for col in variables_ajuste:
-
     treated = df_trim[df_trim["teletrabajo"] == 1][col]
     control = df_trim[df_trim["teletrabajo"] == 0][col]
 
     print(col, round(smd(treated, control), 3))
 
-    
+
 # TEST DE SENSIBILIDAD
 print("---------- TEST SENSIBILIDAD ----------")
 estimate2 = model.estimate_effect(
@@ -229,12 +216,11 @@ estimate2 = model.estimate_effect(
         "fit_params": {}
     }
 )
-
 print("ATE Lasso:", estimate2.value)
+
 
 # MUESTRA DIVIDIDA
 print("---------- MUESTRA DIVIDIDA ----------")
-
 # Dividir la muestra
 df_train, df_test = train_test_split(
     df_model,
@@ -244,9 +230,9 @@ df_train, df_test = train_test_split(
 print("Tamaño train:", df_train.shape)
 print("Tamaño test:", df_test.shape)
 
+
 # Funcion para estimar el ATE
 def estimate_ate(data):
-
     model = CausalModel(
         data=data,
         treatment=tratamiento,
@@ -280,25 +266,20 @@ print("Diferencia absoluta:", abs(ate_train - ate_test))
 
 
 ## BOOTSTRAP
-# =========================
-# CONFIGURACIÓN
-# =========================
+# Configuracion
 B = 30  # numero de bootstrap
 ate_list = []
 
-# =========================
-# BOOTSTRAP LOOP
-# =========================
+# Bootstrap Loop
 for i in range(B):
-
-    # 1. resampleo bootstrap
+    # 1. Resampleo Bootstrap
     df_b = df_trim.sample(frac=1, replace=True, random_state=i)
 
     Y = df_b[resultado].values.ravel()
     T = df_b[tratamiento].values.ravel()
     X = df_b[variables_ajuste]
 
-    # 2. modelo causal
+    # 2. MModelo Causal
     est = LinearDML(
     model_y=RandomForestRegressor(n_estimators=100, random_state=42),
     model_t=RandomForestClassifier(n_estimators=100, random_state=42),
@@ -308,15 +289,13 @@ for i in range(B):
 
     est.fit(Y, T, X=X)
 
-    # 3. guardar ATE
+    # 3. Guardar ATE
     ate = est.ate(X)
     ate_list.append(ate)
 
     print(f"Iteración {i+1}/{B} - ATE: {ate:.4f}")
 
-# =========================
 # RESULTADOS
-# =========================
 ate_array = np.array(ate_list)
 
 ate_mean = np.mean(ate_array)

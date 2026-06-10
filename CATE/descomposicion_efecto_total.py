@@ -1,3 +1,7 @@
+"""
+4.4. Descomposicion del efecto total
+"""
+
 from CATE.preparacion_datos_CATE import df_model
 from CATE.CATE import cf_model
 from CATE.CATE import X_cols
@@ -13,7 +17,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 # DESCOMPOSICION DEL EFECTO TOTAL (TE)
 # Modelo base (sin mediadores)
-te_base = cf_model.effect(X_test).mean()
+te_base = cf_model.efecto(X_test).mean()
 
 # Modelo con todos los mediadores
 med_model = CausalForestDML(
@@ -33,23 +37,23 @@ med_model.fit(
     W=df_model[W_cols + M_cols]
 )
 
-te_with_m = med_model.effect(X_test).mean()
+te_con_m = med_model.efecto(X_test).mean()
 
 # Descomposicion simple
-direct_effect = te_with_m
-indirect_effect = te_base - te_with_m
+efecto_directo = te_con_m
+efecto_indirecto = te_base - te_con_m
 print("----- DESCOMPOSICION DEL EFECTO -----")
 print("TE (sin mediadores):", te_base)
-print("TE (con mediadores):", te_with_m)
-print("Efecto mediado:", indirect_effect)
-print("Efecto directo:", direct_effect)
+print("TE (con mediadores):", te_con_m)
+print("Efecto mediado:", efecto_indirecto)
+print("Efecto directo:", efecto_directo)
 
 # Descomposicion por mediador
-mediator_effects = {}
+efecto_mediadores = {}
 
-for mediator in M_cols:
+for mediador in M_cols:
     # todos menos uno
-    reduced_M = [m for m in M_cols if m != mediator]
+    mediadores_reducido = [m for m in M_cols if m != mediador]
 
     model = CausalForestDML(
         model_t=RandomForestClassifier(n_estimators=200, min_samples_leaf=20),
@@ -65,20 +69,20 @@ for mediator in M_cols:
         Y=df_model["satisfaccion"],
         T=df_model["teletrabajo"],
         X=df_model[X_cols],
-        W=df_model[W_cols + reduced_M]
+        W=df_model[W_cols + mediadores_reducido]
     )
 
-    effect = model.effect(X_test).mean()
+    efecto = model.efecto(X_test).mean()
 
-    mediator_effects[mediator] = effect - direct_effect
+    efecto_mediadores[mediador] = efecto - efecto_directo
 print("----- DESCOMPOSICION DEL EFECTO POR MEDIADOR -----")
-print(mediator_effects)
+print(efecto_mediadores)
 
-names = list(mediator_effects.keys())
-values = list(mediator_effects.values())
+nombres = list(efecto_mediadores.keys())
+valores = list(efecto_mediadores.valores())
 
 plt.figure(figsize=(10,5))
-plt.bar(names, values)
+plt.bar(nombres, valores)
 
 plt.axhline(0, linestyle="--")
 

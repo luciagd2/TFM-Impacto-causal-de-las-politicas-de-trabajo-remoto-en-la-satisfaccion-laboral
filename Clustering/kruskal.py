@@ -1,3 +1,7 @@
+"""
+1.2. Validacion mediante Kruskal-Wallis
+"""
+
 from Clustering.clusters import df_test
 from CATE.CATE import M_cols
 

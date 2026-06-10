@@ -1,3 +1,7 @@
+"""
+4.3. Test de estabilidad
+"""
+
 from CATE.CATE import M_cols
 from CATE.CATE import X_cols
 from CATE.CATE import W_cols
@@ -13,7 +17,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils import resample
 
 # TEST DE ESTABILIDAD DEL EFECTO CAUSAL
-effects = []
+efecto = []
 
 cf_model.fit(
     Y=df_model["satisfaccion"],
@@ -28,17 +32,17 @@ for i in range(30):  # baja a 30, suficiente
         df_b[X_cols]
     ).mean()
 
-    effects.append(effect)
+    efecto.append(effect)
 
 print("----- TEST DE ESTABILIDAD DEL EFECTO CAUSAL -----")
-print(np.mean(effects), np.std(effects))
+print(np.mean(efecto), np.std(efecto))
 
 # TEST DE ESTABILIDAD MEDIACION PARCIAL
-mediators = M_cols
+mediadores = M_cols
 
-results = {}
+resultados = {}
 
-for m in mediators:
+for m in mediadores:
     M_subset = [x for x in M_cols if x != m]
     model = CausalForestDML(
         model_t=RandomForestClassifier(n_estimators=200, min_samples_leaf=20),
@@ -56,6 +60,6 @@ for m in mediators:
         W=df_model[W_cols + M_subset]
     )
     effect = model.effect(X_test).mean()
-    results[m] = effect
+    resultados[m] = effect
 print("----- TEST DE MEDIACION PARCIAL -----")
-print(results)
+print(resultados)

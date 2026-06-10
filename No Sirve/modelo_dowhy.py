@@ -1,6 +1,3 @@
-### CAMBIOS RESPECTO AL MODELO 3
-# SE FIJA UNA SEMILLA
-
 from ATE.preparacion_datos import df_model
 
 from dowhy import CausalModel

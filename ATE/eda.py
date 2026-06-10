@@ -1,4 +1,10 @@
-import pandas as pd
+"""
+1.2. Análisis exploratorio de datos (EDA).
+
+En este script se realiza una exploración inicial del conjunto de datos con el objetivo de comprender 
+la distribución de las variables, detectar posibles anomalías y obtener una primera caracterización 
+de la muestra estudiada.
+"""
 
 from ATE.preparacion_datos import df_model
 

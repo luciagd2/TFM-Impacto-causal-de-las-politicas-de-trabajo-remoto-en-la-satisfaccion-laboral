@@ -1,5 +1,14 @@
-import networkx as nx
+"""
+3. Validación de aciclicidad del grafo causal.
 
+En este script se verifica que la estructura causal propuesta cumple la propiedad de aciclicidad 
+requerida por los grafos acíclicos dirigidos (DAGs).
+
+Para ello, se comprueba que no existan caminos cerrados que permitan regresar a una variable 
+siguiendo la dirección de las aristas.
+"""
+
+import networkx as nx
 from ATE.preparacion_datos import df_model
 
 # Construcción del grafo

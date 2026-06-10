@@ -1,3 +1,16 @@
+"""
+3. Definicion y validacion del DAG
+
+A partir de la estructura identificada mediante el algoritmo PC y de la evidencia recogida en la literatura especializada, 
+se construye el DAG definitivo utilizado en el análisis causal. 
+
+Sobre esta estructura se definen la variable de tratamiento (T), la variable resultado (Y) y los distintos grupos de variables 
+empleados por el modelo: covariables de ajuste (W), variables heterogéneas (X) y mecanismos o mediadores (M). Esta clasificación 
+permite representar explícitamente las relaciones causales consideradas y preparar los datos para la estimación de efectos heterogéneos.
+
+Una vez definido el modelo causal, se realizan distintas comprobaciones orientadas a evaluar la coherencia de la estructura propuesta.
+"""
+
 from CATE.preparacion_datos_CATE import df_model
 
 import statsmodels.api as sm

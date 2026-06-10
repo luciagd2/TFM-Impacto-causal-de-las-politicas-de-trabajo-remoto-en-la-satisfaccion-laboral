@@ -1,8 +1,22 @@
-###
-# EL GRAFO ANTERIOR ERA DEMASIADO DENSO
-# SE REPITE ELIMINANDO LAS VARIABLES QUE NO SE CONECTABAN NI CON TELETRABAJO NI CON SATISFACCION
-# EN NINGUN CASO DE ALPHA
-###
+"""
+2. Descubrimiento de la estructura causal.
+
+En este script se vuelve a aplicar el algoritmo PC, esta vez de forma iterativa, para estimar la estructura del 
+grafo causal a partir de los patrones observados en los datos.
+
+En una primera ejecución se incluyen todas las variables disponibles con el objetivo de explorar la estructura 
+causal del conjunto de datos. Tras analizar los resultados, estos muestran que algunas variables, como el sector 
+laboral, el tipo de puesto y el tipo de contrato, no presentaban relaciones consistentes con el tratamiento ni 
+con la satisfacción laboral. Por este motivo, dichas variables se excluyen de las siguientes fases del análisis.
+
+Una segunda iteración del algoritmo utilizando únicamente las variables más relevantes permite analizar la 
+estabilidad de las relaciones identificadas. Para reducir la complejudad visual, se generan versiones simplificadas
+de los grafos centradas en las conexiones que afectan directamente al teletrabajo y a la satisfacción laboral. 
+
+Los grafos obtenidos (guardados en la carpeta 'Imagenes Grafos CATE') sirven como apoyo para la construcción del 
+DAG, complementando la evidencia procedente de la literatura especializada y el razonamiento teórico sobre el 
+dominio de estudio. 
+"""
 
 from preparacion_datos_CATE import df_model
 
@@ -17,7 +31,7 @@ from networkx.drawing.nx_pydot import to_pydot
 
 # Variables para descubrimiento causal
 
-
+# Conjunto de variables para la primera iteracion del algoritmo PC
 vars = [
     "teletrabajo",          # 1
     "satisfaccion",         # 2
@@ -46,6 +60,7 @@ vars = [
     "horario_fin_semana"    # 23
 ]
 
+# Conjunto de variables para la segunda iteracion del algoritmo PC
 vars_2 = [
     "teletrabajo",          # 1
     "satisfaccion",         # 2

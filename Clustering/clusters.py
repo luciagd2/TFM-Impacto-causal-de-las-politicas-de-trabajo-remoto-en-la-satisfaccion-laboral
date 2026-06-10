@@ -1,3 +1,15 @@
+"""
+1. Creacion de clusters y definicion de perfiles
+
+A partir de las estimaciones individuales del CATE, se aplica un análisis de heterogeneidad mediante clustering. 
+
+Para ello:
+- Se estandarizan las variables de heterogeneidad (X)
+- Se determina el número óptimo de grupos mediante el silhouette score
+- Se utiliza un modelo de K-means para segmentar la muestra y se analizan los clusters obtenidos en función del CATE,
+  las variables sociodemográficas y los mecanismos, para caracterizar perfiles diferenciados de impacto del teletrabajo.
+"""
+
 from CATE.CATE import M_cols
 from CATE.CATE import X_cols
 from CATE.CATE import W_cols
@@ -14,14 +26,7 @@ from sklearn.metrics import silhouette_score
 # HETEROGENEIDAD CAUSAL
 
 # Definir variables para clusters
-# Variables heterogeneas principales
 cluster_vars = X_cols
-###cluster_vars = [
-###    "edad", "antiguedad", "tiene_hijos", "autonomia",
-###    "horas_extra", "horas_trabajadas", "satisfaccion_ingresos",
-###    "seguridad_laboral", "digitalizacion"
-###]
-
 mechanism_vars = M_cols
 
 # Crear dataframe base

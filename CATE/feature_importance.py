@@ -1,3 +1,7 @@
+"""
+4.2. Importancia de las variables
+"""
+
 from CATE.CATE import X_train
 from CATE.CATE import cf_model
 
@@ -7,7 +11,7 @@ import matplotlib.pyplot as plt
 # FEATURE IMPORTANCE
 feature_importance = pd.DataFrame({
     "variable": X_train.columns,
-    "importance": cf_model.feature_importances_
+    "importancia": cf_model.feature_importances_
 })
 
 feature_importance = feature_importance.sort_values(
@@ -19,12 +23,12 @@ print(feature_importance)
 
 feature_importance.plot(
     x="variable",
-    y="importance",
+    y="importancia",
     kind="bar"
 )
 
 plt.title("Importancia causal de las variables")
-plt.ylabel("Importance")
+plt.ylabel("Importancia")
 plt.xticks(rotation=45)
 
 plt.show()

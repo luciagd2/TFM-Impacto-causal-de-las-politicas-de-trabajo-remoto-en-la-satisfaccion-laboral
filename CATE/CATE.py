@@ -1,3 +1,17 @@
+"""
+4. Creacion del modelo de Causal Forest y calculo del CATE
+
+Se organizan las variables del modelo en tratamiento (T), resultado (Y), covariables de ajuste (W) y variables de heterogeneidad (X),
+manteniendo separadas las variables mediadoras (M) para su análisis posterior. 
+
+Se divide la muestra en conjuntos de entrenamiento y test para evaluar la estabilidad del modelo, y se estima el propensity score 
+con el objetivo de comprobar el supuesto de soporte común mediante el análisis del solapamiento entre grupos tratados y de control. 
+
+Finalmente, el efecto causal heterogéneo se estima mediante un modelo de Causal Forest, que permite capturar variaciones individuales 
+en el efecto del tratamiento, y se analizan los resultados del CATE a través de estadísticos descriptivos (media, desviación estándar, 
+mínimo y máximo) para evaluar la magnitud y dispersión de la heterogeneidad en la muestra.
+"""
+
 from CATE.preparacion_datos_CATE import df_model
 
 import numpy as np
